@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class CapsuleControl : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     [SerializeField] private float speed = 5;
     [SerializeField] private LayerMask trackLayer;
@@ -21,7 +21,20 @@ public class CapsuleControl : MonoBehaviour
         _referenceTransform = reference;
     }
 
-   
+    void Awake()
+    {
+        _rigidbody = GetComponent<Rigidbody>();
+        if (Camera.main is { }) _referenceTransform = Camera.main.transform;
+    }
+
+    private void UpdateReference()
+    {
+        var forward = _referenceTransform.forward;
+        forward -= (forward - _rigidbody.velocity) * Time.deltaTime;
+        
+        _referenceTransform.LookAt(transform.position + forward, _trackNormal);
+    }
+
     void Update()
     {
         UpdateReference();
@@ -45,6 +58,7 @@ public class CapsuleControl : MonoBehaviour
             else if (horizontalAxis < 0)
                 speedVector -= _referenceTransform.right;
         }
+
         
         var diffNormal = _newTrackNormal - _trackNormal;
         _trackNormal += diffNormal * Time.deltaTime;
@@ -60,13 +74,7 @@ public class CapsuleControl : MonoBehaviour
         _newTrackNormal = other.contacts.Length > 0 ? other.contacts[0].normal : Vector3.up;
     }
 
-    private void UpdateReference()
-    {
-        var forward = _referenceTransform.forward;
-        forward -= (forward - _rigidbody.velocity) * Time.deltaTime;
-        
-        _referenceTransform.LookAt(transform.position + forward, _trackNormal);
-    }
+
 
     private void OnDrawGizmos()
     {
