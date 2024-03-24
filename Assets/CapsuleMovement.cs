@@ -10,7 +10,7 @@ public class CapsuleMovement : MonoBehaviour
 
     public float groundDrag;
 
-    public float jumpForce;
+    public float jumpForce = 10;
     public float jumpCooldown;
     public float airMultiplier;
     bool readyToJump;
@@ -64,8 +64,9 @@ public class CapsuleMovement : MonoBehaviour
         verticalInput = Input.GetAxisRaw("Vertical");
 
         // when to jump
-        if(Input.GetKey(jumpKey) && readyToJump && grounded)
+        if(Input.GetKeyDown(jumpKey)) // && readyToJump && grounded)
         {
+            Debug.Log("jump??");
             readyToJump = false;
 
             Jump();
@@ -86,7 +87,6 @@ public class CapsuleMovement : MonoBehaviour
         // in air
         else if(!grounded)
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
-
     }
 
     private void SpeedControl()
@@ -103,7 +103,7 @@ public class CapsuleMovement : MonoBehaviour
 
     private void Jump()
     {
-        // reset y velocity<
+        // reset y velocity
         rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
 
         rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
@@ -114,3 +114,4 @@ public class CapsuleMovement : MonoBehaviour
         readyToJump =  true;
     }
 }
+        
